@@ -1,4 +1,4 @@
-FROM heixiongtt/oraclejre8:0.0.1
+FROM 192.168.141.1:5000/heixiongtt/oraclejre8:0.0.1
 VOLUME /tmp
 ADD target/awesome-web-0.0.1-SNAPSHOT.jar app.jar
 #ENTRYPOINT ["java","-jar","/app.jar"]
