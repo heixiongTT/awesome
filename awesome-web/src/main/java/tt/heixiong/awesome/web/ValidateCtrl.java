@@ -8,19 +8,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import tt.heixiong.awesome.application.StudentApplication;
+import tt.heixiong.awesome.api.ValidateApi;
 import tt.heixiong.awesome.req.StudentReq;
 import tt.heixiong.awesome.service.StudentService;
 
 @Controller
-@RequestMapping("/validate")
 @Slf4j
-public class ValidateCtrl {
+public class ValidateCtrl implements ValidateApi {
 
     @Autowired
     private StudentService studentService;
-    @Autowired
-    private StudentApplication studentApplication;
 
     @RequestMapping(value = "student", method = RequestMethod.PUT)
     public String createStudent(@Validated @RequestBody StudentReq req) {

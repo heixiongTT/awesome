@@ -10,8 +10,19 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 @EnableHystrix
 public class AwesomeWebApplication {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+/*        Student student = new Student();
+        student.setId(1L);
+        student.setName("lily");
+        student.setAge(18);
+        ObjectMapper om = new ObjectMapper();
+        try {
+            System.out.println(om.writeValueAsString(student));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }*/
         SpringApplication.run(AwesomeWebApplication.class, args);
+
     }
 
 }
