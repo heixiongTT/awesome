@@ -8,14 +8,16 @@
 <form action="#" th:action="@{/validate/student}" method="put">
     <tr>
         <td>Name:</td>
-        <td><input type="text" th:text="${name}" /></td>
+        <td><input type="text" th:text="${name}"/></td>
     </tr>
     <tr>
         <td>Age:</td>
-        <td><input type="text" th:text="${age}" /></td>
+        <td><input type="text" th:text="${age}"/></td>
     </tr>
     <tr>
-        <td><button type="submit">Submit</button></td>
+        <td>
+            <button type="submit">Submit</button>
+        </td>
     </tr>
 </form>
 

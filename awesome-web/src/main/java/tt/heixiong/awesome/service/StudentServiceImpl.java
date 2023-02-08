@@ -10,7 +10,7 @@ import javax.validation.Validator;
 import java.util.Set;
 
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
 
 
     @Autowired
@@ -21,7 +21,7 @@ public class StudentServiceImpl implements StudentService{
     public Student createStudent(Student student) {
         Set<ConstraintViolation<Student>> set = validator.validate(student);
         StringBuffer errors = new StringBuffer();
-        if(set.size() > 0) {
+        if (set.size() > 0) {
             set.forEach(e -> errors.append(e.getMessage()).append(";"));
         }
         return null;
