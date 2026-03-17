@@ -1,0 +1,30 @@
+package tt.heixiong.awesome.api;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import tt.heixiong.awesome.dto.RequirementDto;
+import tt.heixiong.awesome.req.RequirementCreateReq;
+import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
+
+import java.util.List;
+
+@FeignClient(value = "awesome")
+@RequestMapping("/requirements")
+public interface RequirementApi {
+
+    @PostMapping
+    RequirementDto createRequirement(@Validated @RequestBody RequirementCreateReq req);
+
+    @GetMapping
+    List<RequirementDto> listRequirements();
+
+    @GetMapping("/{id}")
+    RequirementDto getRequirement(@PathVariable("id") Long id);
+
+    @PutMapping("/status")
+    RequirementDto updateRequirementStatus(@Validated @RequestBody RequirementUpdateStatusReq req);
+
+    @DeleteMapping("/{id}")
+    void deleteRequirement(@PathVariable("id") Long id);
+}
