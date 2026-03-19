@@ -135,6 +135,7 @@ mvn -version
 
 - 基于 `Requirement` 示例演示完整的分层结构：`Controller -> Service -> Repository -> JPA Entity`。
 - 提供统一的参数校验异常返回。
+- 默认通过 `local / test / stage / prod` 四套 Profile 管理环境差异；本地默认使用 H2，测试/预发/生产通过环境变量注入外部依赖。
 - 默认开发环境使用 H2 内存数据库，开箱即跑；生产环境可以平滑切换到 MySQL。
 - 已引入 Flyway 进行版本化数据库迁移，统一管理 H2 / MySQL 的表结构变更。
 - 提供基础 CRUD 与按 `status` / `creator` 过滤查询示例。
@@ -320,10 +321,21 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
 
 适用于可以直接访问公共 Maven 仓库的环境：
 
+### 本地开发
+
 ```bash
 mvn clean test
-mvn -pl awesome-web spring-boot:run
+mvn -pl awesome-web spring-boot:run -Dspring-boot.run.profiles=local
 ```
+
+### 其他环境
+
+```bash
+java -jar awesome-web/target/awesome-web-0.0.1-SNAPSHOT.jar --spring.profiles.active=stage
+SPRING_PROFILES_ACTIVE=prod java -jar awesome-web/target/awesome-web-0.0.1-SNAPSHOT.jar
+```
+
+> 不再在产物内硬编码 `spring.profiles.active`，请通过启动参数、环境变量或容器编排配置注入。
 
 ## 数据库变更管理
 
@@ -419,6 +431,8 @@ curl -X DELETE 'http://localhost:8080/awesome/requirements/1'
 ## 后续建议
 
 - 增加 `BaseEntity`、审计字段与统一分页响应。
+- 为 `Student` 等其他领域对象继续补齐 Repository 与 JPA 映射。
+- 在测试、预发、生产环境中通过环境变量注入数据库与注册中心地址，并配合 Flyway/Liquibase 管理表结构。
 - 新增领域能力时，优先按 `Requirement` 示例补齐完整的 `Controller -> Service -> Repository -> Entity` 链路，再合入主干。
 - 在生产环境中将 `application-prod.properties` 连接到 MySQL 并配合 Flyway/Liquibase 管理表结构。
 - 增加 `application-local.properties`，避免默认 `dev` 配置对 Eureka 的硬依赖。
