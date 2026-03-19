@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class AwesomeWebApplicationTests {
+public class RequirementFlowIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,5 +44,11 @@ public class AwesomeWebApplicationTests {
                         .content("{\"id\":1,\"status\":\"DONE\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DONE"));
+
+        mockMvc.perform(delete("/requirements/1"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/requirements/1"))
+                .andExpect(status().isNotFound());
     }
 }

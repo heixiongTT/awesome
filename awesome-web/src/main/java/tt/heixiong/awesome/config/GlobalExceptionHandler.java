@@ -1,5 +1,6 @@
 package tt.heixiong.awesome.config;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,4 +26,13 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toList()));
         return response;
     }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex) {
+        Map<String, Object> response = new LinkedHashMap<String, Object>();
+        response.put("message", "Requirement not found");
+        return response;
+    }
+
 }
