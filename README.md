@@ -47,37 +47,6 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
   }'
 ```
 
-
-## 代码质量门禁
-
-项目已在父 `pom.xml` 中内建基础质量门禁，默认在 `verify` 阶段执行：
-
-- `Spotless`：统一 Java / XML / Markdown / properties 等文件格式。
-- `Checkstyle`：执行基础静态代码规范检查。
-- `JaCoCo`：在测试后生成覆盖率报告，默认输出到 `awesome-web/target/site/jacoco/jacoco.xml`。
-- `SonarQube`：通过 Maven Scanner 与 `sonar-project.properties` 对接 Sonar 分析。
-
-### 常用命令
-
-```bash
-mvn spotless:apply
-mvn verify
-mvn sonar:sonar \
-  -Dsonar.host.url=http://your-sonarqube-host:9000 \
-  -Dsonar.token=<your-token>
-```
-
-
-CI 示例已内置在 `.github/workflows/quality-gate.yml`，默认会执行 `mvn clean verify`，并在配置 `SONAR_HOST_URL` / `SONAR_TOKEN` 后执行 SonarQube 扫描。
-
-### 推荐 CI 门禁顺序
-
-1. `mvn spotless:check`
-2. `mvn checkstyle:check`
-3. `mvn test`
-4. `mvn verify`
-5. `mvn sonar:sonar`
-
 ## 启动方式
 
 ```bash
@@ -85,12 +54,32 @@ mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
 
-## 可观测性基线
+## 容器化与部署
 
-- 已补充 `requestId` 贯通过滤器，默认透传并回写 `X-Request-Id`。
-- 已补充独立 access log，并在日志中统一输出 `traceId` / `requestId`。
-- 已引入 Actuator + Prometheus registry，可通过 `/awesome/actuator/prometheus` 暴露指标。
-- 详细规范见 `docs/observability.md`。
+### 构建镜像
+
+```bash
+docker build -t awesome-web:local .
+```
+
+### 运行容器
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=25.0" \
+  awesome-web:local
+```
+
+### 健康检查
+
+```bash
+curl http://localhost:8080/awesome/actuator/health
+```
+
+- Docker 镜像默认启用容器友好的 JVM 参数，并通过 `JAVA_OPTS` 覆盖。
+- 通过 `ENABLE_SKYWALKING=true`、`SW_AGENT_PATH`、`SW_AGENT_NAME` 与 `SW_AGENT_COLLECTOR_BACKEND_SERVICES` 可按需挂载 SkyWalking agent。
+- Kubernetes 示例模板位于 `deploy/k8s/deployment.yaml`，包含 `readinessProbe`、`livenessProbe`、`startupProbe` 与基础资源限制。
 
 ## 后续建议
 
