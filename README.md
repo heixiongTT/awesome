@@ -14,6 +14,7 @@
 - 默认开发环境使用 H2 内存数据库，开箱即跑；生产环境可以平滑切换到 MySQL。
 - 提供基础 CRUD 与按 `status` / `creator` 过滤查询示例。
 - 测试环境内置集成测试，便于二次开发时快速回归。
+- 默认以单体方式启动，不再依赖 Eureka / Spring Cloud Config / Feign 才能本地运行。
 
 ## Requirement API 示例
 
