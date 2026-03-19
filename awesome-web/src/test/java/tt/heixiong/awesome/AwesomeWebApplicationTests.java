@@ -44,4 +44,21 @@ public class AwesomeWebApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DONE"));
     }
+
+    @Test
+    public void getRequirementReturnsMappedAuditFields() throws Exception {
+        mockMvc.perform(post("/requirements")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"验证MapStruct映射\",\"description\":\"确认实体字段被转换为DTO\",\"priority\":\"MEDIUM\",\"creator\":\"codex\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
+
+        mockMvc.perform(get("/requirements/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("验证MapStruct映射"))
+                .andExpect(jsonPath("$.createdAt").isNotEmpty())
+                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
+    }
+
 }
