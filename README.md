@@ -335,6 +335,11 @@ java -jar awesome-web/target/awesome-web-0.0.1-SNAPSHOT.jar --spring.profiles.ac
 SPRING_PROFILES_ACTIVE=prod java -jar awesome-web/target/awesome-web-0.0.1-SNAPSHOT.jar
 ```
 
+## Java 17 升级评估
+
+- 已补充一份专门的升级评估文档：`docs/java-17-upgrade-assessment.md`。
+- 文档包含当前依赖栈风险、`javax` 到 `jakarta` 的改造点、推荐升级路线、风险清单与验收标准。
+=======
 > 不再在产物内硬编码 `spring.profiles.active`，请通过启动参数、环境变量或容器编排配置注入。
 
 ## 数据库变更管理
