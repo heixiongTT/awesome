@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import tt.heixiong.awesome.api.RequirementApi;
+import tt.heixiong.awesome.contract.RequirementContract;
 import tt.heixiong.awesome.domain.Requirement;
 import tt.heixiong.awesome.dto.RequirementDto;
 import tt.heixiong.awesome.req.RequirementCreateReq;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @ResponseBody
-public class RequirementCtrl implements RequirementApi {
+public class RequirementCtrl implements RequirementContract {
 
     private final RequirementService requirementService;
 

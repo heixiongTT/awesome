@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "tt.heixiong.awesome.api")
+@EnableFeignClients(basePackages = "tt.heixiong.awesome.client")
 @EnableJpaAuditing
 @EnableEurekaClient
 public class AwesomeWebApplication {
