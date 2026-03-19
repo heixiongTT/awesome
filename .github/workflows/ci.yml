@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  build:
+    name: Build and verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+
+      - name: Show toolchain versions
+        run: |
+          java -version
+          mvn -version
+
+      - name: Resolve Maven dependencies
+        run: mvn -B -ntp -U dependency:go-offline
+
+      - name: Run quality gate
+        run: mvn -B -ntp validate
+
+      - name: Compile and test
+        run: mvn -B -ntp verify
