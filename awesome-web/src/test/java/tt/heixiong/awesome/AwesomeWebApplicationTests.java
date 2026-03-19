@@ -1,5 +1,6 @@
 package tt.heixiong.awesome;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,8 +8,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,6 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:integration-test.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AwesomeWebApplicationTests {
 
     @Autowired
@@ -31,7 +37,7 @@ public class AwesomeWebApplicationTests {
         mockMvc.perform(post("/requirements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-Trace-Id", "trace-create")
-                        .content("{\"title\":\"补全JPA脚手架\",\"description\":\"接入Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
+                        .content("{\"title\":\"requirement title\",\"description\":\"Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("SUCCESS"))
                 .andExpect(jsonPath("$.message").value("OK"))
@@ -42,7 +48,7 @@ public class AwesomeWebApplicationTests {
         mockMvc.perform(get("/requirements").param("creator", "codex"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("SUCCESS"))
-                .andExpect(jsonPath("$.data[0].title").value("补全JPA脚手架"));
+                .andExpect(jsonPath("$.data[0].title").value("requirement title"));
 
         mockMvc.perform(put("/requirements/status")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,14 +67,17 @@ public class AwesomeWebApplicationTests {
 
     @Test
     public void statusUpdateRejectsSkippingWorkflowSteps() throws Exception {
-        mockMvc.perform(post("/requirements")
+        MvcResult createResult = mockMvc.perform(post("/requirements")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\":\"补全JPA脚手架\",\"description\":\"接入Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
-                .andExpect(status().isOk());
+                        .content("{\"title\":\"requirement title\",\"description\":\"Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Integer requirementId = JsonPath.read(createResult.getResponse().getContentAsString(), "$.data.id");
 
         mockMvc.perform(put("/requirements/status")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":1,\"status\":\"DONE\"}"))
+                        .content("{\"id\":" + requirementId + ",\"status\":\"DONE\"}"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("INVALID_STATUS_TRANSITION"))
                 .andExpect(jsonPath("$.message").value(
@@ -103,3 +112,4 @@ public class AwesomeWebApplicationTests {
                 .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
     }
 }
+

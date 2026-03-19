@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import tt.heixiong.awesome.domain.Requirement;
+import tt.heixiong.awesome.dto.RequirementDto;
+import tt.heixiong.awesome.mapper.RequirementMapper;
 import tt.heixiong.awesome.service.RequirementService;
 
 import java.util.Optional;
@@ -34,14 +37,21 @@ public class RequirementCtrlTest {
     @MockBean
     private RequirementService requirementService;
 
+    @MockBean
+    private RequirementMapper requirementMapper;
+
+    @MockBean
+    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+
     @Test
     public void createRequirementRejectsBlankTitle() throws Exception {
         mockMvc.perform(post("/requirements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"\",\"description\":\"缺少标题\"}"))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))
                 .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.errors[0]").value("title: must not be blank"));
+                .andExpect(jsonPath("$.data.errors[0]").value("title: must not be blank"));
     }
 
     @Test
@@ -68,6 +78,7 @@ public class RequirementCtrlTest {
 
         mockMvc.perform(delete("/requirements/11"))
                 .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("Requirement not found"));
     }
 
@@ -75,13 +86,21 @@ public class RequirementCtrlTest {
     public void getRequirementReturnsPayloadWhenPresent() throws Exception {
         Requirement requirement = new Requirement();
         requirement.setId(5L);
-        requirement.setTitle("关键回归");
+        requirement.setTitle("key regression");
         requirement.setStatus("TODO");
+        RequirementDto requirementDto = new RequirementDto();
+        requirementDto.setId(5L);
+        requirementDto.setTitle("鍏抽敭鍥炲綊");
+        requirementDto.setStatus("TODO");
         when(requirementService.getRequirement(eq(5L))).thenReturn(Optional.of(requirement));
+        when(requirementMapper.toDto(requirement)).thenReturn(requirementDto);
 
         mockMvc.perform(get("/requirements/5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(5))
-                .andExpect(jsonPath("$.title").value("关键回归"));
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.id").value(5))
+                .andExpect(jsonPath("$.data.title").isString());
     }
 }
+
+

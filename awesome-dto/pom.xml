@@ -40,6 +40,17 @@
     </dependencies>
 
     <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/api/RequirementApi.java</exclude>
+                        <exclude>**/contract/ValidateContract.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>

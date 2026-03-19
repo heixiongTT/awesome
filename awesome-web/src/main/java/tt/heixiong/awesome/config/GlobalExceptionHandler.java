@@ -2,6 +2,7 @@ package tt.heixiong.awesome.config;
 
 import feign.FeignException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler {
                 "Data integrity violation",
                 null,
                 request);
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleEmptyResultDataAccessException(
+            EmptyResultDataAccessException ex,
+            HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", "Requirement not found", null, request);
     }
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)

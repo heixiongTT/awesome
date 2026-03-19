@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import tt.heixiong.awesome.domain.Requirement;
 
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:integration-test.properties")
 public class RequirementRepositoryTest {
 
     @Autowired
