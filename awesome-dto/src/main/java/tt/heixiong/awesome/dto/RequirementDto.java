@@ -3,6 +3,8 @@ package tt.heixiong.awesome.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class RequirementDto {
@@ -19,7 +21,7 @@ public class RequirementDto {
 
     private String creator;
 
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
-    private Long updatedAt;
+    private LocalDateTime updatedAt;
 }

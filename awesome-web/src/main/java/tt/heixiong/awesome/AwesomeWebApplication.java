@@ -3,26 +3,16 @@ package tt.heixiong.awesome;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableFeignClients(basePackages = "tt.heixiong.awesome.api")
+@EnableJpaAuditing
 @EnableEurekaClient
-@EnableHystrix
 public class AwesomeWebApplication {
 
-    public static void main(String[] args) throws Exception {
-/*        Student student = new Student();
-        student.setId(1L);
-        student.setName("lily");
-        student.setAge(18);
-        ObjectMapper om = new ObjectMapper();
-        try {
-            System.out.println(om.writeValueAsString(student));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }*/
+    public static void main(String[] args) {
         SpringApplication.run(AwesomeWebApplication.class, args);
-
     }
-
 }

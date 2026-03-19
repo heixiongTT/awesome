@@ -17,7 +17,8 @@ public interface RequirementApi {
     RequirementDto createRequirement(@Validated @RequestBody RequirementCreateReq req);
 
     @GetMapping
-    List<RequirementDto> listRequirements();
+    List<RequirementDto> listRequirements(@RequestParam(value = "status", required = false) String status,
+                                          @RequestParam(value = "creator", required = false) String creator);
 
     @GetMapping("/{id}")
     RequirementDto getRequirement(@PathVariable("id") Long id);

@@ -1,42 +1,47 @@
 package tt.heixiong.awesome;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class AwesomeWebApplicationTests {
 
+    @Autowired
+    private MockMvc mockMvc;
+
     @Test
-    public void contextLoads() {
+    public void requirementCrudFlowWorks() throws Exception {
+        mockMvc.perform(post("/requirements")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"补全JPA脚手架\",\"description\":\"接入Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.status").value("TODO"));
+
+        mockMvc.perform(get("/requirements").param("creator", "codex"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("补全JPA脚手架"));
+
+        mockMvc.perform(put("/requirements/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1,\"status\":\"DONE\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DONE"));
     }
-
-    public static void main(String[] args) throws Exception {
-
-        OkHttpClient client = new OkHttpClient().newBuilder().connectTimeout(30, TimeUnit.SECONDS).readTimeout(30 ,TimeUnit.SECONDS).build();
-        MediaType mediaType = MediaType.parse("application/json");
-        String ss = "{\"query\":\"query queryLogs($condition: LogQueryCondition) {\\n    queryLogs(condition: $condition) {\\n        logs {\\n          serviceName\\n          serviceId\\n          serviceInstanceName\\n          serviceInstanceId\\n          endpointName\\n          endpointId\\n          traceId\\n          timestamp\\n          contentType\\n          content\\n          tags {\\n            key\\n            value\\n          }\\n        }\\n        total\\n    }}\",\"variables\":{\"condition\":{\"serviceId\":\"Y2FsbGJhY2s=.1\",\"keywordsOfContent\":[\"" + "83c291659fec43ec8a4ebbf22b662f26.5977.16700530827327707:rent.dcentralize.room.add" +  "\"],\"excludingKeywordsOfContent\":[],\"tags\":[],\"paging\":{\"pageNum\":\"1\",\"pageSize\":22,\"needTotal\":true},\"queryDuration\":{\"start\":\"2022-11-26 162630\",\"end\":\"2022-12-03 162630\",\"step\":\"SECOND\"}}}}";
-        System.out.println("网关请求：" + ss);
-        RequestBody body = RequestBody.create(ss, mediaType);
-        Request request = new Request.Builder()
-                .url("https://trace.ebaas.com/graphql")
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
-        System.out.println("响应状态码：" + response.code());
-        Assert.assertTrue(response.isSuccessful());
-        String resp = response.body().string();
-        System.out.println("网关响应结果：" + Objects.requireNonNull(resp));
-    }
-
-
 }
