@@ -1,9 +1,11 @@
 package tt.heixiong.awesome.service;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tt.heixiong.awesome.domain.Requirement;
+import tt.heixiong.awesome.exception.ResourceNotFoundException;
 import tt.heixiong.awesome.repository.RequirementRepository;
 
 import java.util.List;
@@ -61,6 +63,10 @@ public class RequirementServiceImpl implements RequirementService {
 
     @Override
     public void deleteRequirement(Long id) {
-        requirementRepository.deleteById(id);
+        try {
+            requirementRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException ex) {
+            throw new ResourceNotFoundException("Requirement not found");
+        }
     }
 }
