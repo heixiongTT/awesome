@@ -387,6 +387,9 @@ curl -X DELETE 'http://localhost:8080/awesome/requirements/1'
 
 ## 后续建议
 
+- 增加 `BaseEntity`、审计字段与统一分页响应。
+- 新增领域能力时，优先按 `Requirement` 示例补齐完整的 `Controller -> Service -> Repository -> Entity` 链路，再合入主干。
+- 在生产环境中将 `application-prod.properties` 连接到 MySQL 并配合 Flyway/Liquibase 管理表结构。
 - 增加 `application-local.properties`，避免默认 `dev` 配置对 Eureka 的硬依赖。
 - 补充统一的公司 Maven 私服地址与账号申请流程。
 - 增加 `application-prod.properties` 与 MySQL/Flyway 示例配置。
