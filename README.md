@@ -54,6 +54,13 @@ mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
 
+## 可观测性基线
+
+- 已补充 `requestId` 贯通过滤器，默认透传并回写 `X-Request-Id`。
+- 已补充独立 access log，并在日志中统一输出 `traceId` / `requestId`。
+- 已引入 Actuator + Prometheus registry，可通过 `/awesome/actuator/prometheus` 暴露指标。
+- 详细规范见 `docs/observability.md`。
+
 ## 后续建议
 
 - 增加 `BaseEntity`、审计字段与统一分页响应。
