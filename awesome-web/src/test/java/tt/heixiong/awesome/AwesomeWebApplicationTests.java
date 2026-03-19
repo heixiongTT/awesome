@@ -44,4 +44,13 @@ public class AwesomeWebApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DONE"));
     }
+
+    @Test
+    public void swaggerDocsEndpointExposesRequirementApi() throws Exception {
+        mockMvc.perform(get("/v2/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paths['/requirements'].post.summary").value("创建需求"))
+                .andExpect(jsonPath("$.paths['/requirements/status'].put.summary").value("更新需求状态"));
+    }
+
 }

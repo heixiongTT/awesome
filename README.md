@@ -47,6 +47,21 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
   }'
 ```
 
+
+## OpenAPI / Swagger 文档
+
+启动服务后，可通过以下地址访问自动生成的接口文档：
+
+- Swagger UI：`http://localhost:8080/awesome/swagger-ui.html`
+- Swagger JSON：`http://localhost:8080/awesome/v2/api-docs`
+
+文档中已补充：
+
+- `Requirement` 接口的操作说明。
+- 请求/响应 schema。
+- 常见错误码（`400` 参数校验失败、`404` 资源不存在）。
+- 每个操作的请求示例参数。
+
 ## 启动方式
 
 ```bash
