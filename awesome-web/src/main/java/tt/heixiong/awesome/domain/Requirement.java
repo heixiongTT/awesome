@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import java.time.LocalDateTime;
 
 @Getter
@@ -37,6 +38,10 @@ public class Requirement {
 
     @Column(length = 64)
     private String creator;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

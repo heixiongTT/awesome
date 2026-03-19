@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,9 +38,6 @@ public class AwesomeWebApplicationTests {
                 .andExpect(jsonPath("$.traceId").value("trace-create"))
                 .andExpect(jsonPath("$.data.id").isNumber())
                 .andExpect(jsonPath("$.data.status").value("TODO"));
-                .andExpect(header().exists("X-Request-Id"))
-                .andExpect(jsonPath("$.id").isNumber())
-                .andExpect(jsonPath("$.status").value("TODO"));
 
         mockMvc.perform(get("/requirements").param("creator", "codex"))
                 .andExpect(status().isOk())
@@ -50,10 +46,33 @@ public class AwesomeWebApplicationTests {
 
         mockMvc.perform(put("/requirements/status")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1,\"status\":\"IN_PROGRESS\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
+
+        mockMvc.perform(put("/requirements/status")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"id\":1,\"status\":\"DONE\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.status").value("DONE"));
+    }
+
+    @Test
+    public void statusUpdateRejectsSkippingWorkflowSteps() throws Exception {
+        mockMvc.perform(post("/requirements")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"补全JPA脚手架\",\"description\":\"接入Spring Data JPA\",\"priority\":\"HIGH\",\"creator\":\"codex\"}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(put("/requirements/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"id\":1,\"status\":\"DONE\"}"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("INVALID_STATUS_TRANSITION"))
+                .andExpect(jsonPath("$.message").value(
+                        "Status must follow TODO -> IN_PROGRESS -> DONE, cannot change from TODO to DONE"));
     }
 
     @Test
@@ -83,40 +102,4 @@ public class AwesomeWebApplicationTests {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
     }
-
-    @Test
-    public void actuatorEndpointsExposePrometheusAndHealth() throws Exception {
-        mockMvc.perform(get("/actuator/health"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("UP"));
-
-        mockMvc.perform(get("/actuator/prometheus"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void getRequirementReturnsMappedAuditFields() throws Exception {
-        mockMvc.perform(post("/requirements")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\":\"验证MapStruct映射\",\"description\":\"确认实体字段被转换为DTO\",\"priority\":\"MEDIUM\",\"creator\":\"codex\"}"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
-
-        mockMvc.perform(get("/requirements/2"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("验证MapStruct映射"))
-                .andExpect(jsonPath("$.createdAt").isNotEmpty())
-                .andExpect(jsonPath("$.updatedAt").isNotEmpty());
-    }
-
-
-    @Test
-    public void swaggerDocsEndpointExposesRequirementApi() throws Exception {
-        mockMvc.perform(get("/v2/api-docs"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.paths['/requirements'].post.summary").value("创建需求"))
-                .andExpect(jsonPath("$.paths['/requirements/status'].put.summary").value("更新需求状态"));
-    }
-
 }

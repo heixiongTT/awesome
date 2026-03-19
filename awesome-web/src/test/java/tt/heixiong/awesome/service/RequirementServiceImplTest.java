@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import tt.heixiong.awesome.domain.Requirement;
+import tt.heixiong.awesome.exception.BusinessException;
 import tt.heixiong.awesome.repository.RequirementRepository;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -52,6 +54,25 @@ public class RequirementServiceImplTest {
     }
 
     @Test
+    public void createRequirementNormalizesProvidedStatus() {
+        Requirement requirement = new Requirement();
+        requirement.setTitle("补齐测试");
+        requirement.setStatus(" in_progress ");
+
+        Requirement saved = new Requirement();
+        saved.setId(1L);
+        saved.setStatus("IN_PROGRESS");
+
+        when(requirementRepository.save(any(Requirement.class))).thenReturn(saved);
+
+        requirementService.createRequirement(requirement);
+
+        ArgumentCaptor<Requirement> captor = ArgumentCaptor.forClass(Requirement.class);
+        verify(requirementRepository).save(captor.capture());
+        assertEquals("IN_PROGRESS", captor.getValue().getStatus());
+    }
+
+    @Test
     public void listRequirementsUsesCombinedFilterWhenStatusAndCreatorProvided() {
         Requirement requirement = new Requirement();
         requirement.setId(2L);
@@ -81,6 +102,37 @@ public class RequirementServiceImplTest {
 
         assertFalse(result.isPresent());
         verify(requirementRepository).findById(99L);
+        verify(requirementRepository, never()).save(any(Requirement.class));
+    }
+
+    @Test
+    public void updateRequirementStatusAllowsOnlyNextSequentialStatus() {
+        Requirement requirement = new Requirement();
+        requirement.setId(1L);
+        requirement.setStatus("TODO");
+        when(requirementRepository.findById(1L)).thenReturn(Optional.of(requirement));
+        when(requirementRepository.save(any(Requirement.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Requirement updated = requirementService.updateRequirementStatus(1L, "in_progress").get();
+
+        assertEquals("IN_PROGRESS", updated.getStatus());
+        verify(requirementRepository).save(requirement);
+    }
+
+    @Test
+    public void updateRequirementStatusRejectsSkippingWorkflowSteps() {
+        Requirement requirement = new Requirement();
+        requirement.setId(1L);
+        requirement.setStatus("TODO");
+        when(requirementRepository.findById(1L)).thenReturn(Optional.of(requirement));
+
+        try {
+            requirementService.updateRequirementStatus(1L, "DONE");
+            fail("Expected BusinessException");
+        } catch (BusinessException ex) {
+            assertEquals("INVALID_STATUS_TRANSITION", ex.getCode());
+        }
+
         verify(requirementRepository, never()).save(any(Requirement.class));
     }
 
