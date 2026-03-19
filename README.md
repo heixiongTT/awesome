@@ -47,6 +47,37 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
   }'
 ```
 
+
+## 代码质量门禁
+
+项目已在父 `pom.xml` 中内建基础质量门禁，默认在 `verify` 阶段执行：
+
+- `Spotless`：统一 Java / XML / Markdown / properties 等文件格式。
+- `Checkstyle`：执行基础静态代码规范检查。
+- `JaCoCo`：在测试后生成覆盖率报告，默认输出到 `awesome-web/target/site/jacoco/jacoco.xml`。
+- `SonarQube`：通过 Maven Scanner 与 `sonar-project.properties` 对接 Sonar 分析。
+
+### 常用命令
+
+```bash
+mvn spotless:apply
+mvn verify
+mvn sonar:sonar \
+  -Dsonar.host.url=http://your-sonarqube-host:9000 \
+  -Dsonar.token=<your-token>
+```
+
+
+CI 示例已内置在 `.github/workflows/quality-gate.yml`，默认会执行 `mvn clean verify`，并在配置 `SONAR_HOST_URL` / `SONAR_TOKEN` 后执行 SonarQube 扫描。
+
+### 推荐 CI 门禁顺序
+
+1. `mvn spotless:check`
+2. `mvn checkstyle:check`
+3. `mvn test`
+4. `mvn verify`
+5. `mvn sonar:sonar`
+
 ## 启动方式
 
 ```bash
