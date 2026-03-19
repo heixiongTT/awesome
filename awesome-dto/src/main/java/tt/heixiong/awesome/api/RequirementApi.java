@@ -1,6 +1,5 @@
 package tt.heixiong.awesome.api;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tt.heixiong.awesome.common.ApiResponse;
@@ -10,7 +9,6 @@ import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
 
 import java.util.List;
 
-@FeignClient(value = "awesome")
 @RequestMapping("/requirements")
 public interface RequirementApi {
 
