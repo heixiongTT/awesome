@@ -54,6 +54,11 @@ mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
 
+## Java 17 升级评估
+
+- 已补充一份专门的升级评估文档：`docs/java-17-upgrade-assessment.md`。
+- 文档包含当前依赖栈风险、`javax` 到 `jakarta` 的改造点、推荐升级路线、风险清单与验收标准。
+
 ## 后续建议
 
 - 增加 `BaseEntity`、审计字段与统一分页响应。
