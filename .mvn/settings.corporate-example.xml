@@ -1,0 +1,74 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <!--
+      公司/CI 环境示例：
+      - mirrorOf 使用 *，将所有依赖统一收敛到公司私服（Nexus / Artifactory）。
+      - 如需 HTTP/HTTPS 代理，请在 proxies 节点显式配置，并补齐 nonProxyHosts。
+      - credentials 推荐由 ~/.m2/settings-security.xml、CI Secret 或宿主机注入。
+    -->
+    <servers>
+        <server>
+            <id>company-maven</id>
+            <username>${env.MAVEN_REPO_USERNAME}</username>
+            <password>${env.MAVEN_REPO_PASSWORD}</password>
+        </server>
+    </servers>
+
+    <mirrors>
+        <mirror>
+            <id>company-maven</id>
+            <name>Company Maven Repository</name>
+            <url>https://nexus.example.com/repository/maven-public/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>company-repositories</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>company-maven</id>
+                    <name>Company Maven Repository</name>
+                    <url>https://nexus.example.com/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>company-maven</id>
+                    <name>Company Maven Repository</name>
+                    <url>https://nexus.example.com/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <!--
+    <proxies>
+        <proxy>
+            <id>corp-proxy</id>
+            <active>true</active>
+            <protocol>http</protocol>
+            <host>proxy.example.com</host>
+            <port>8080</port>
+            <nonProxyHosts>localhost|127.*|*.local|nexus.example.com</nonProxyHosts>
+        </proxy>
+    </proxies>
+    -->
+</settings>

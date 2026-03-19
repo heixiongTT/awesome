@@ -1,6 +1,5 @@
 package tt.heixiong.awesome.service;
 
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tt.heixiong.awesome.domain.Student;
@@ -17,7 +16,6 @@ public class StudentServiceImpl implements StudentService {
     private Validator validator;
 
     @Override
-    @HystrixCommand(fallbackMethod = "test")
     public Student createStudent(Student student) {
         Set<ConstraintViolation<Student>> set = validator.validate(student);
         StringBuffer errors = new StringBuffer();
