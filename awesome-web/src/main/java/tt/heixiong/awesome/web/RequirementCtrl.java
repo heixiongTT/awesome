@@ -4,6 +4,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+import tt.heixiong.awesome.contract.RequirementContract;
 import tt.heixiong.awesome.api.RequirementApi;
 import tt.heixiong.awesome.common.ApiResponse;
 import tt.heixiong.awesome.domain.Requirement;
@@ -20,7 +22,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-public class RequirementCtrl implements RequirementApi {
+@ResponseBody
+public class RequirementCtrl implements RequirementContract {
 
     private static final String TRACE_ID_HEADER = "X-Trace-Id";
 

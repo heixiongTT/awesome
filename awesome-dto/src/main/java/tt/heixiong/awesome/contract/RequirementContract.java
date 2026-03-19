@@ -1,4 +1,4 @@
-package tt.heixiong.awesome.api;
+package tt.heixiong.awesome.contract;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +10,7 @@ import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
 import java.util.List;
 
 @RequestMapping("/requirements")
-public interface RequirementApi {
+public interface RequirementContract {
 
     @PostMapping
     ApiResponse<RequirementDto> createRequirement(@Validated @RequestBody RequirementCreateReq req);

@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableFeignClients(basePackages = "tt.heixiong.awesome.client")
 @EnableJpaAuditing
 public class AwesomeWebApplication {
 
