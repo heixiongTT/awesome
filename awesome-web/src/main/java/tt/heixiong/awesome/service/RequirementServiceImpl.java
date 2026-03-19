@@ -1,56 +1,66 @@
 package tt.heixiong.awesome.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import tt.heixiong.awesome.domain.Requirement;
+import tt.heixiong.awesome.repository.RequirementRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class RequirementServiceImpl implements RequirementService {
 
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private static final String DEFAULT_STATUS = "TODO";
 
-    private final Map<Long, Requirement> requirementStore = new ConcurrentHashMap<Long, Requirement>();
+    private final RequirementRepository requirementRepository;
+
+    public RequirementServiceImpl(RequirementRepository requirementRepository) {
+        this.requirementRepository = requirementRepository;
+    }
 
     @Override
     public Requirement createRequirement(Requirement requirement) {
-        Long currentId = idGenerator.getAndIncrement();
-        Long currentTime = System.currentTimeMillis();
-        requirement.setId(currentId);
-        requirement.setStatus(requirement.getStatus() == null ? "TODO" : requirement.getStatus());
-        requirement.setCreatedAt(currentTime);
-        requirement.setUpdatedAt(currentTime);
-        requirementStore.put(currentId, requirement);
-        return requirement;
-    }
-
-    @Override
-    public List<Requirement> listRequirements() {
-        return new ArrayList<Requirement>(requirementStore.values());
-    }
-
-    @Override
-    public Requirement getRequirement(Long id) {
-        return requirementStore.get(id);
-    }
-
-    @Override
-    public Requirement updateRequirementStatus(Long id, String status) {
-        Requirement requirement = requirementStore.get(id);
-        if (requirement == null) {
-            return null;
+        if (!StringUtils.hasText(requirement.getStatus())) {
+            requirement.setStatus(DEFAULT_STATUS);
         }
-        requirement.setStatus(status);
-        requirement.setUpdatedAt(System.currentTimeMillis());
-        return requirement;
+        return requirementRepository.save(requirement);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Requirement> listRequirements(String status, String creator) {
+        if (StringUtils.hasText(status) && StringUtils.hasText(creator)) {
+            return requirementRepository.findByStatusAndCreator(status, creator);
+        }
+        if (StringUtils.hasText(status)) {
+            return requirementRepository.findByStatus(status);
+        }
+        if (StringUtils.hasText(creator)) {
+            return requirementRepository.findByCreator(creator);
+        }
+        return requirementRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Requirement> getRequirement(Long id) {
+        return requirementRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Requirement> updateRequirementStatus(Long id, String status) {
+        return requirementRepository.findById(id)
+                .map(requirement -> {
+                    requirement.setStatus(status);
+                    return requirementRepository.save(requirement);
+                });
     }
 
     @Override
     public void deleteRequirement(Long id) {
-        requirementStore.remove(id);
+        requirementRepository.deleteById(id);
     }
 }

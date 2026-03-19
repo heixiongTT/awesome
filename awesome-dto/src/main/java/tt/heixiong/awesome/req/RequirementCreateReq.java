@@ -17,4 +17,6 @@ public class RequirementCreateReq {
     private String priority;
 
     private String creator;
+
+    private String status;
 }
