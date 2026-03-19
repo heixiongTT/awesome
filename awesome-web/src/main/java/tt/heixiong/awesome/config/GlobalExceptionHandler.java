@@ -12,6 +12,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.server.ResponseStatusException;
 import tt.heixiong.awesome.common.ApiResponse;
 import tt.heixiong.awesome.exception.BusinessException;
+import org.springframework.web.server.ResponseStatusException;
+import tt.heixiong.awesome.dto.ApiErrorResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
@@ -29,6 +31,13 @@ public class GlobalExceptionHandler {
                                                                                                   HttpServletRequest request) {
         Map<String, Object> errors = new LinkedHashMap<String, Object>();
         errors.put("errors", ex.getBindingResult()
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        ApiErrorResponse response = new ApiErrorResponse();
+        response.setMessage("Validation failed");
+        response.setErrors(ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
@@ -88,5 +97,13 @@ public class GlobalExceptionHandler {
     private String getTraceId(HttpServletRequest request) {
         String traceId = request.getHeader(TRACE_ID_HEADER);
         return traceId != null && traceId.trim().length() > 0 ? traceId : UUID.randomUUID().toString();
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleResponseStatusException(ResponseStatusException ex) {
+        ApiErrorResponse response = new ApiErrorResponse();
+        response.setMessage(ex.getReason());
+        return response;
     }
 }

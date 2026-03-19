@@ -54,6 +54,33 @@ mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
 
+## 容器化与部署
+
+### 构建镜像
+
+```bash
+docker build -t awesome-web:local .
+```
+
+### 运行容器
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=25.0" \
+  awesome-web:local
+```
+
+### 健康检查
+
+```bash
+curl http://localhost:8080/awesome/actuator/health
+```
+
+- Docker 镜像默认启用容器友好的 JVM 参数，并通过 `JAVA_OPTS` 覆盖。
+- 通过 `ENABLE_SKYWALKING=true`、`SW_AGENT_PATH`、`SW_AGENT_NAME` 与 `SW_AGENT_COLLECTOR_BACKEND_SERVICES` 可按需挂载 SkyWalking agent。
+- Kubernetes 示例模板位于 `deploy/k8s/deployment.yaml`，包含 `readinessProbe`、`livenessProbe`、`startupProbe` 与基础资源限制。
+
 ## 后续建议
 
 - 增加 `BaseEntity`、审计字段与统一分页响应。
