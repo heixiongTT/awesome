@@ -1,5 +1,7 @@
 package tt.heixiong.awesome.web;
 
+import io.swagger.annotations.Api;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,7 @@ import tt.heixiong.awesome.service.RequirementService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Api(tags = "Requirement Controller")
 @RestController
 @ResponseBody
 public class RequirementCtrl implements RequirementApi {
