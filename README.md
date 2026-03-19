@@ -318,6 +318,23 @@ mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
 
+## CI 验证流程
+
+- 仓库已增加 GitHub Actions 工作流：`.github/workflows/ci.yml`。
+- 每次向 `main` / `master` 推送，或发起 Pull Request 时，会执行以下最小校验：
+  1. 使用 Temurin JDK 8 与 Maven 缓存恢复构建环境。
+  2. 执行 `mvn -B -ntp -U dependency:go-offline` 预解析依赖。
+  3. 执行 `mvn -B -ntp validate`，通过 Maven Enforcer 校验 JDK / Maven 基线。
+  4. 执行 `mvn -B -ntp verify` 完成编译、测试与打包验证。
+
+### 本地执行同款检查
+
+```bash
+mvn -B -ntp -U dependency:go-offline
+mvn -B -ntp validate
+mvn -B -ntp verify
+```
+
 ### 公司网络 / CI（推荐统一私服）
 
 如果公司网络必须通过 Nexus / Artifactory 访问依赖，请按下面步骤配置：
