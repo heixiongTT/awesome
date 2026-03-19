@@ -59,3 +59,9 @@ mvn -pl awesome-web spring-boot:run
 - 增加 `BaseEntity`、审计字段与统一分页响应。
 - 为 `Student` 等其他领域对象继续补齐 Repository 与 JPA 映射。
 - 在生产环境中将 `application-prod.properties` 连接到 MySQL 并配合 Flyway/Liquibase 管理表结构。
+
+## 技术栈升级规划
+
+- `HEI-36` 的升级评估与执行路径已整理到 `docs/spring-upgrade-plan.md`。
+- 当前建议采用“两段式升级”：先落到 `Spring Boot 2.7.x + Spring Cloud 2021.0.x`，再推进 `Java 17 + Spring Boot 3.x + Spring Cloud 2023.0.x`。
+- 在进入 Boot 3 之前，优先清理 Hystrix、`javax.*` 依赖、旧版 Config/Feign 用法与多环境配置硬编码。
