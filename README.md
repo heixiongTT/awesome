@@ -12,6 +12,7 @@
 - 基于 `Requirement` 示例演示完整的分层结构：`Controller -> Service -> Repository -> JPA Entity`。
 - 提供统一的参数校验异常返回。
 - 默认开发环境使用 H2 内存数据库，开箱即跑；生产环境可以平滑切换到 MySQL。
+- 已引入 Flyway 进行版本化数据库迁移，统一管理 H2 / MySQL 的表结构变更。
 - 提供基础 CRUD 与按 `status` / `creator` 过滤查询示例。
 - 测试环境内置集成测试，便于二次开发时快速回归。
 
@@ -53,6 +54,13 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
 mvn clean test
 mvn -pl awesome-web spring-boot:run
 ```
+
+## 数据库变更管理
+
+- Flyway 脚本目录：`awesome-web/src/main/resources/db/migration`。
+- 当前初始版本脚本：`V1__create_requirements_table.sql`，用于创建 `requirements` 表及基础索引。
+- 已将 `spring.jpa.hibernate.ddl-auto` 从自动更新调整为 `validate`，启动时由 Flyway 先执行迁移，再由 Hibernate 校验实体与表结构是否一致。
+- 如果后续需要新增字段或索引，请追加新的 `V{n}__description.sql`，不要直接依赖 Hibernate 自动改表。
 
 ## 后续建议
 
