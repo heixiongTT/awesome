@@ -57,5 +57,5 @@ mvn -pl awesome-web spring-boot:run
 ## 后续建议
 
 - 增加 `BaseEntity`、审计字段与统一分页响应。
-- 为 `Student` 等其他领域对象继续补齐 Repository 与 JPA 映射。
+- 新增领域能力时，优先按 `Requirement` 示例补齐完整的 `Controller -> Service -> Repository -> Entity` 链路，再合入主干。
 - 在生产环境中将 `application-prod.properties` 连接到 MySQL 并配合 Flyway/Liquibase 管理表结构。
