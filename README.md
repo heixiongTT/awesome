@@ -1,6 +1,6 @@
 # awesome
 
-一个基于 **Java 8 + Spring Boot + Spring Data JPA** 的多模块脚手架工程，适合作为中小型后端服务的起点。
+一个基于 **Java 17 + Spring Boot + Spring Data JPA** 的多模块脚手架工程，适合作为中小型后端服务的起点。
 
 ## 模块说明
 

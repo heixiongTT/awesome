@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM maven:3.9.9-eclipse-temurin-8 AS builder
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /build
 
 COPY pom.xml ./
@@ -12,7 +12,7 @@ COPY awesome-dto/src awesome-dto/src
 COPY awesome-web/src awesome-web/src
 RUN mvn -B -pl awesome-web -am clean package -DskipTests
 
-FROM eclipse-temurin:8-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 RUN apt-get update \
