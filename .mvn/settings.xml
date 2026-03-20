@@ -4,14 +4,14 @@
     <!--
       项目级 Maven settings：
       1. 避免依赖开发机 ~/.m2/settings.xml 中的代理/镜像污染当前仓库。
-      2. 默认直连 Maven Central，适合无代理或可直接访问外网的环境。
+      2. 使用阿里云 Maven 镜像，适合国内网络环境。
       3. 若公司网络要求统一私服，请参考 settings.corporate-example.xml 覆盖使用。
     -->
     <mirrors>
         <mirror>
-            <id>central</id>
-            <name>Project default Maven Central mirror</name>
-            <url>https://repo.maven.apache.org/maven2</url>
+            <id>aliyunmaven</id>
+            <name>阿里云公共仓库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
     </mirrors>
@@ -25,26 +25,26 @@
             <repositories>
                 <repository>
                     <id>central</id>
-                    <name>Maven Central</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
+                    <name>阿里云公共仓库</name>
+                    <url>https://maven.aliyun.com/repository/public</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </repository>
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
                     <id>central</id>
-                    <name>Maven Central</name>
-                    <url>https://repo.maven.apache.org/maven2</url>
+                    <name>阿里云公共仓库</name>
+                    <url>https://maven.aliyun.com/repository/public</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>
                     <snapshots>
-                        <enabled>false</enabled>
+                        <enabled>true</enabled>
                     </snapshots>
                 </pluginRepository>
             </pluginRepositories>
