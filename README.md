@@ -13,6 +13,7 @@
 - 提供统一的参数校验异常返回。
 - 默认开发环境使用 H2 内存数据库，开箱即跑；生产环境可以平滑切换到 MySQL。
 - 提供基础 CRUD 与按 `status` / `creator` 过滤查询示例。
+- 新增基于 Binance 公共行情接口的市场数据接入流水线，支持抓取、标准化入库与查询最近行情记录。
 - 测试环境内置集成测试，便于二次开发时快速回归。
 
 ## Requirement API 示例
@@ -45,6 +46,28 @@ curl -X PUT 'http://localhost:8080/awesome/requirements/status' \
     "id": 1,
     "status": "DONE"
   }'
+```
+
+
+## Market Data API 示例
+
+### 抓取并入库
+
+```bash
+curl -X POST 'http://localhost:8080/awesome/market-data/ingestions' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "source": "BINANCE",
+    "symbol": "BTCUSDT",
+    "interval": "1m",
+    "limit": 100
+  }'
+```
+
+### 查询最近行情
+
+```bash
+curl 'http://localhost:8080/awesome/market-data?source=BINANCE&symbol=BTCUSDT&interval=1m&limit=50'
 ```
 
 ## 启动方式
