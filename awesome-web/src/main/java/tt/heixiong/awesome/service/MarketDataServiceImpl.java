@@ -14,7 +14,10 @@ import tt.heixiong.awesome.repository.MarketDataRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -81,15 +84,46 @@ public class MarketDataServiceImpl implements MarketDataService {
         String normalizedSource = normalizeRequired(source, "source").toUpperCase();
         String normalizedSymbol = normalizeRequired(symbol, "symbol").toUpperCase();
         String normalizedInterval = normalizeRequired(interval, "interval").toLowerCase();
+        MarketDataAggregationSupport.resolveInterval(normalizedInterval);
+        validateListLimit(limit);
+
         List<MarketDataRecord> records = marketDataRepository.findTop200BySourceAndSymbolAndMarketIntervalOrderByOpenTimeDesc(
                 normalizedSource,
                 normalizedSymbol,
                 normalizedInterval);
+        if (!records.isEmpty()) {
+            return applyLimit(records, limit);
+        }
+
+        List<String> lowerIntervalCandidates = MarketDataAggregationSupport.findLowerIntervalCandidates(normalizedInterval);
+        if (lowerIntervalCandidates.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<MarketDataRecord> candidateRecords = marketDataRepository.findTop1000BySourceAndSymbolAndMarketIntervalInOrderByOpenTimeDesc(
+                normalizedSource,
+                normalizedSymbol,
+                lowerIntervalCandidates);
+        Optional<String> sourceInterval = MarketDataAggregationSupport.pickBestSourceInterval(candidateRecords, normalizedInterval);
+        if (!sourceInterval.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        List<MarketDataRecord> recordsToAggregate = candidateRecords.stream()
+                .filter(record -> sourceInterval.get().equals(record.getMarketInterval()))
+                .collect(Collectors.toList());
+        return MarketDataAggregationSupport.aggregate(recordsToAggregate, normalizedInterval, limit);
+    }
+
+    private void validateListLimit(Integer limit) {
+        if (limit != null && limit < 1) {
+            throw new BusinessException("INVALID_MARKET_DATA_LIMIT", "limit must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private List<MarketDataRecord> applyLimit(List<MarketDataRecord> records, Integer limit) {
         if (limit == null || limit >= records.size()) {
             return records;
-        }
-        if (limit < 1) {
-            throw new BusinessException("INVALID_MARKET_DATA_LIMIT", "limit must be greater than 0", HttpStatus.BAD_REQUEST);
         }
         return records.subList(0, limit);
     }

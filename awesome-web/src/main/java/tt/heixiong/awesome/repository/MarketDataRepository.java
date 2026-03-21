@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import tt.heixiong.awesome.domain.MarketDataRecord;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 public interface MarketDataRepository extends JpaRepository<MarketDataRecord, Long> {
@@ -16,4 +17,8 @@ public interface MarketDataRepository extends JpaRepository<MarketDataRecord, Lo
     List<MarketDataRecord> findTop200BySourceAndSymbolAndMarketIntervalOrderByOpenTimeDesc(String source,
                                                                                             String symbol,
                                                                                             String marketInterval);
+
+    List<MarketDataRecord> findTop1000BySourceAndSymbolAndMarketIntervalInOrderByOpenTimeDesc(String source,
+                                                                                                String symbol,
+                                                                                                Collection<String> marketIntervals);
 }

@@ -70,6 +70,14 @@ curl -X POST 'http://localhost:8080/awesome/market-data/ingestions' \
 curl 'http://localhost:8080/awesome/market-data?source=BINANCE&symbol=BTCUSDT&interval=1m&limit=50'
 ```
 
+### 生成更大周期 K 线
+
+```bash
+curl 'http://localhost:8080/awesome/market-data?source=BINANCE&symbol=BTCUSDT&interval=3m&limit=20'
+```
+
+> 当目标周期未直接入库时，服务会优先使用已存储的更小周期 K 线动态聚合为指定周期的 OHLCV 数据。
+
 ### 接入行为说明
 
 - 市场数据会按 `source + symbol + interval + openTime` 做去重，重复抓取同一根 K 线不会重复入库。

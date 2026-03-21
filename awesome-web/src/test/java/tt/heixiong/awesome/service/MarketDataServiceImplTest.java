@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -96,6 +97,90 @@ public class MarketDataServiceImplTest {
         assertEquals(1, marketDataService.list("BINANCE", "BTCUSDT", "1m", 1).size());
         verify(marketDataRepository).findTop200BySourceAndSymbolAndMarketIntervalOrderByOpenTimeDesc(
                 eq("BINANCE"), eq("BTCUSDT"), eq("1m"));
+    }
+
+
+    @Test
+    public void listAggregatesCandlesFromSmallerInterval() {
+        MarketDataRecord first = record(
+                "1m",
+                Instant.parse("2026-03-20T00:00:00Z"),
+                "100.00",
+                "105.00",
+                "99.00",
+                "101.00",
+                "10.00",
+                10L);
+        MarketDataRecord second = record(
+                "1m",
+                Instant.parse("2026-03-20T00:01:00Z"),
+                "101.00",
+                "108.00",
+                "100.00",
+                "107.00",
+                "11.00",
+                11L);
+        MarketDataRecord third = record(
+                "1m",
+                Instant.parse("2026-03-20T00:02:00Z"),
+                "107.00",
+                "109.00",
+                "103.00",
+                "104.00",
+                "12.00",
+                12L);
+
+        when(marketDataRepository.findTop200BySourceAndSymbolAndMarketIntervalOrderByOpenTimeDesc(
+                "BINANCE", "BTCUSDT", "3m")).thenReturn(Collections.emptyList());
+        when(marketDataRepository.findTop1000BySourceAndSymbolAndMarketIntervalInOrderByOpenTimeDesc(
+                eq("BINANCE"), eq("BTCUSDT"), eq(Collections.singletonList("1m"))))
+                .thenReturn(Arrays.asList(third, second, first));
+
+        List<MarketDataRecord> result = marketDataService.list("BINANCE", "BTCUSDT", "3m", 10);
+
+        assertEquals(1, result.size());
+        assertEquals("3m", result.get(0).getMarketInterval());
+        assertEquals(Instant.parse("2026-03-20T00:00:00Z"), result.get(0).getOpenTime());
+        assertEquals(new BigDecimal("100.00"), result.get(0).getOpenPrice());
+        assertEquals(new BigDecimal("109.00"), result.get(0).getHighPrice());
+        assertEquals(new BigDecimal("99.00"), result.get(0).getLowPrice());
+        assertEquals(new BigDecimal("104.00"), result.get(0).getClosePrice());
+        assertEquals(new BigDecimal("33.00"), result.get(0).getVolume());
+        assertEquals(Long.valueOf(33L), result.get(0).getTradeCount());
+    }
+
+    @Test
+    public void listRejectsUnsupportedInterval() {
+        try {
+            marketDataService.list("BINANCE", "BTCUSDT", "2m", 10);
+            fail("Expected BusinessException");
+        } catch (BusinessException ex) {
+            assertEquals("UNSUPPORTED_MARKET_DATA_INTERVAL", ex.getCode());
+        }
+    }
+
+
+    private MarketDataRecord record(String interval,
+                                    Instant openTime,
+                                    String openPrice,
+                                    String highPrice,
+                                    String lowPrice,
+                                    String closePrice,
+                                    String volume,
+                                    Long tradeCount) {
+        MarketDataRecord record = new MarketDataRecord();
+        record.setSource("BINANCE");
+        record.setSymbol("BTCUSDT");
+        record.setMarketInterval(interval);
+        record.setOpenTime(openTime);
+        record.setCloseTime(openTime.plusSeconds(59));
+        record.setOpenPrice(new BigDecimal(openPrice));
+        record.setHighPrice(new BigDecimal(highPrice));
+        record.setLowPrice(new BigDecimal(lowPrice));
+        record.setClosePrice(new BigDecimal(closePrice));
+        record.setVolume(new BigDecimal(volume));
+        record.setTradeCount(tradeCount);
+        return record;
     }
 
     private MarketDataCandle candle(Instant openTime) {
