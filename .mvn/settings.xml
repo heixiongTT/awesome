@@ -9,9 +9,9 @@
     -->
     <mirrors>
         <mirror>
-            <id>aliyunmaven</id>
-            <name>阿里云公共仓库</name>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <id>maven</id>
+            <name>公共仓库</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
             <mirrorOf>central</mirrorOf>
         </mirror>
     </mirrors>

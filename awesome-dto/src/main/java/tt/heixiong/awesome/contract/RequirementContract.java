@@ -1,12 +1,12 @@
 package tt.heixiong.awesome.contract;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import tt.heixiong.awesome.common.ApiResponse;
 import tt.heixiong.awesome.dto.RequirementDto;
 import tt.heixiong.awesome.req.RequirementCreateReq;
 import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
 
-import javax.validation.Valid;
 import java.util.List;
 
 public interface RequirementContract {

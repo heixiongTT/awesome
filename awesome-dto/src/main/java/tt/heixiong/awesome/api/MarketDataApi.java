@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,6 @@ import tt.heixiong.awesome.dto.MarketDataDto;
 import tt.heixiong.awesome.dto.MarketDataIngestionResultDto;
 import tt.heixiong.awesome.req.MarketDataIngestionReq;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "Market Data")

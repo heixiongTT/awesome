@@ -1,5 +1,9 @@
 package tt.heixiong.awesome.filter;
 
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -8,12 +12,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.Filter;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -27,8 +25,8 @@ public class ObservabilityFilter implements Filter {
     private static final Logger ACCESS_LOG = LoggerFactory.getLogger("ACCESS_LOG");
 
     @Override
-    public void doFilter(javax.servlet.ServletRequest request,
-                         javax.servlet.ServletResponse response,
+    public void doFilter(ServletRequest request,
+                         ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         StatusCaptureResponseWrapper httpResponse = new StatusCaptureResponseWrapper((HttpServletResponse) response);

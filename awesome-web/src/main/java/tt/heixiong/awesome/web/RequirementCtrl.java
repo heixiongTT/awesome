@@ -1,6 +1,8 @@
 package tt.heixiong.awesome.web;
 
 import io.swagger.annotations.Api;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,6 @@ import tt.heixiong.awesome.req.RequirementCreateReq;
 import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
 import tt.heixiong.awesome.service.RequirementService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "Requirement Controller")

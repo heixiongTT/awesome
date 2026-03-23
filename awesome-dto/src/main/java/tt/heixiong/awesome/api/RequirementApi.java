@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import tt.heixiong.awesome.common.ApiResponse;
 import tt.heixiong.awesome.dto.ApiErrorResponse;
@@ -11,7 +12,6 @@ import tt.heixiong.awesome.dto.RequirementDto;
 import tt.heixiong.awesome.req.RequirementCreateReq;
 import tt.heixiong.awesome.req.RequirementUpdateStatusReq;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Api(tags = "Requirement")

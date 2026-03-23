@@ -6,7 +6,6 @@
         <groupId>tt.heixiong</groupId>
         <artifactId>awesome</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
     </parent>
     <groupId>tt.heixiong</groupId>
     <artifactId>awesome-dto</artifactId>
@@ -15,7 +14,6 @@
     <description>Demo project for Spring Boot</description>
 
     <dependencies>
-
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
@@ -23,8 +21,9 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

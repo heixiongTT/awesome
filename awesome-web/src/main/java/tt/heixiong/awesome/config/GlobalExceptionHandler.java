@@ -1,6 +1,6 @@
 package tt.heixiong.awesome.config;
 
-import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -15,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 import tt.heixiong.awesome.common.ApiResponse;
 import tt.heixiong.awesome.exception.BusinessException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -78,19 +77,6 @@ public class GlobalExceptionHandler {
                 "Requirement was modified by another request, please retry in sequence",
                 null,
                 request);
-    }
-
-    @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ApiResponse<Map<String, Object>>> handleFeignException(FeignException ex,
-                                                                                 HttpServletRequest request) {
-        return buildResponse(HttpStatus.BAD_GATEWAY, "REMOTE_CALL_FAILED", "Remote call failed", null, request);
-    }
-
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ApiResponse<Map<String, Object>>> handleResponseStatusException(ResponseStatusException ex,
-                                                                                          HttpServletRequest request) {
-        String code = ex.getStatus() == HttpStatus.NOT_FOUND ? "RESOURCE_NOT_FOUND" : "HTTP_STATUS_ERROR";
-        return buildResponse(ex.getStatus(), code, ex.getReason(), null, request);
     }
 
     @ExceptionHandler(Exception.class)
